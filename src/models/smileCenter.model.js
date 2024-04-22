@@ -74,6 +74,5 @@ class SmileCenter {
         }
     }
 }
-//TODO: Create repository that will make the filters, and the responses
 
 module.exports = SmileCenter;
