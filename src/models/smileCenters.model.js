@@ -50,4 +50,6 @@ async function filterDocumentByService(productId) {
       }
 }
 
+//TODO: Create repository that will make the filters, and the responses
+
 module.exports = { getServices, filterDocumentByService };
