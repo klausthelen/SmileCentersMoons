@@ -1,0 +1,20 @@
+service: SmileCentersMoons
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  enviroment:
+    MONGO_DB_URL: ${env:MONGO_DB_URL, "none"}
+    MONGO_DB_NAME: ${env:MONGO_DB_NAME, "none"}
+
+
+functions:
+  api:
+    handler: src/index.handler
+    events:
+      - httpApi: '*'
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
