@@ -17,21 +17,21 @@ class SmileCenterRepository {
 
     static async filterDocument(query) {
         const filter = {};
-        let product_id = null;
+        let productId = null;
         if(query.product_id) {
-            product_id = query.product_id;
-            const serviceParam = 'Services.'.concat(query.product_id).concat('.productId');
-            query.product_id && (filter[serviceParam] = query.product_id);
+            productId = query.product_id;
+            const serviceParam = 'Services.'.concat(productId).concat('.productId');
+            filter[serviceParam] = productId;
         }
 
         query.center_type && (filter.Center_Type = query.center_type);
         query.zone && (filter.Zone = query.zone);
 
         const results = await SmileCenters.filterDocumentByService(filter);
-        return this.buildResponse(results, product_id);
+        return this.buildResponse(results, productId);
     }
 
-    static buildResponse(results, product_id) {
+    static buildResponse(results, productId) {
         const response = [];
         results.forEach(result => {
             response.push(
@@ -44,7 +44,7 @@ class SmileCenterRepository {
                     schedule: result.Timetable,
                     city: result.City,
                     country: result.Country,
-                    appointmentTypeId: product_id ? result.Services[product_id].AppointmentTypeId 
+                    appointmentTypeId: productId ? result.Services[productId].AppointmentTypeId 
                                         : result.Appointment_Type_Id ? result.Appointment_Type_Id 
                                         : null
                 }
