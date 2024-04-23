@@ -66,7 +66,7 @@ class SmileCenter {
     }
 
 
-    static async filterDocumentByService(filter) {
+    static async filterSmileCenter(filter) {
         try {
             return await filterCollection(COLLECTION_NAME, filter);
         } catch (err) {

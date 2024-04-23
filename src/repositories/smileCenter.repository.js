@@ -17,40 +17,80 @@ class SmileCenterRepository {
 
     static async filterDocument(query) {
         const filter = {};
-        let productId = null;
+        const filterArray = [];
+        const productIdList = [];
+
         if(query.product_id) {
-            productId = query.product_id;
-            const serviceParam = 'Services.'.concat(productId).concat('.productId');
-            filter[serviceParam] = productId;
+            query.product_id.forEach(
+                singleproductId => {
+                    const serviceParam = 'Services.'.concat(singleproductId).concat('.productId');
+                    filterArray.push({
+                        [serviceParam]: singleproductId
+                    });
+                    productIdList.push(singleproductId);
+                }
+            );
         }
 
-        query.center_type && (filter.Center_Type = query.center_type);
-        query.zone && (filter.Zone = query.zone);
+        if(query.center_type) {
+            query.center_type.forEach(
+                singleCenterType => {
+                    filterArray.push({
+                        'Center_Type': singleCenterType
+                    });
+                }
+            );
+        }
 
-        const results = await SmileCenters.filterDocumentByService(filter);
-        return this.buildResponse(results, productId);
+        if(query.zone) {
+            query.zone.forEach(
+                singleZone => {
+                    filterArray.push({
+                        'Zone': singleZone
+                    });
+                }
+            );
+        }
+
+        if(filterArray.length > 0) {
+            query.inclusive ? filter['$or'] =  filterArray : filter['$and'] =  filterArray;
+        }
+        const results = await SmileCenters.filterSmileCenter(filter);
+        return this.buildResponse(results, productIdList);
     }
 
-    static buildResponse(results, productId) {
+    static buildResponse(results, productIdList) {
         const response = [];
         results.forEach(result => {
             response.push(
                 {
                     centerName: result.Center_Name,
-                    address: result.Street ? result.Street.concat(result.Number): null,
+                    address: result.Street ? result.Street.concat(" ").concat(result.Number): null,
                     calendarId: result.Calendar_Id,
                     promo: result.promo,
                     centerIcon: result.Center_Icon,
                     schedule: result.Timetable,
                     city: result.City,
                     country: result.Country,
-                    appointmentTypeId: productId ? result.Services[productId].AppointmentTypeId 
-                                        : result.Appointment_Type_Id ? result.Appointment_Type_Id 
-                                        : null
+                    appointmentTypeIdList: productIdList.length > 0 ? this.buildAppointmentTypeIdList(result.Services, productIdList)
+                                        : result.Appointment_Type_Id ? [result.Appointment_Type_Id.toString()]
+                                        : []
                 }
             );
         });
         return response;
+    }
+    
+
+    static buildAppointmentTypeIdList(services, productIdList) {
+        const appointmentTypeIdList = [];
+        Object.entries(services).forEach(([key, value]) => {
+            if(productIdList.indexOf(key) >= 0) {
+                appointmentTypeIdList.push(value.AppointmentTypeId);
+            }
+        });
+        
+        return appointmentTypeIdList;
     }
 }
 
