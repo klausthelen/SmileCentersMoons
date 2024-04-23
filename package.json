@@ -9,6 +9,8 @@
   },
   "scripts": {
     "dev": "serverless offline --stage dev",
+    "deploy": "serverless deploy --stage prod",
+    "remove": "serverless remove --stage prod",
     "test": "jest"
   },
   "devDependencies": {
