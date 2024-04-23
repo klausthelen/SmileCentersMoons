@@ -14,7 +14,7 @@ async function dateBaseConnect() {
     }
 }
 
-async function aggregate(collectionName, aggregation) {
+async function aggregateCollection(collectionName, aggregation) {
     try {
       const db = await dateBaseConnect();
       const collection = db.collection(collectionName);
@@ -26,7 +26,7 @@ async function aggregate(collectionName, aggregation) {
     }
 }
 
-async function filter(collectionName, filter) {
+async function filterCollection(collectionName, filter) {
     try {
       const db = await dateBaseConnect();
       const collection = db.collection(collectionName);
@@ -38,4 +38,4 @@ async function filter(collectionName, filter) {
     }
 }
   
-module.exports = { aggregate, filter};
+module.exports = { aggregateCollection, filterCollection};
