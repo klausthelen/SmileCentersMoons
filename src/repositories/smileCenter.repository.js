@@ -21,35 +21,55 @@ class SmileCenterRepository {
         const productIdList = [];
 
         if(query.product_id) {
-            query.product_id.forEach(
-                singleproductId => {
-                    const serviceParam = 'Services.'.concat(singleproductId).concat('.productId');
-                    filterArray.push({
-                        [serviceParam]: singleproductId
-                    });
-                    productIdList.push(singleproductId);
-                }
-            );
+            if(typeof query.product_id === 'string') {
+                const serviceParam = 'Services.'.concat(query.product_id).concat('.productId');
+                filterArray.push({
+                    [serviceParam]: query.product_id
+                });
+                productIdList.push(query.product_id);
+            } else if(Array.isArray(query.product_id)) {
+                query.product_id.forEach(
+                    singleproductId => {
+                        const serviceParam = 'Services.'.concat(singleproductId).concat('.productId');
+                        filterArray.push({
+                            [serviceParam]: singleproductId
+                        });
+                        productIdList.push(singleproductId);
+                    }
+                );
+            }
         }
 
         if(query.center_type) {
-            query.center_type.forEach(
-                singleCenterType => {
-                    filterArray.push({
-                        'Center_Type': singleCenterType
-                    });
-                }
-            );
+            if(typeof query.center_type === 'string') {
+                filterArray.push({
+                    'Center_Type': query.center_type
+                });
+            } else if(Array.isArray(query.center_type)) {
+                query.center_type.forEach(
+                    singleCenterType => {
+                        filterArray.push({
+                            'Center_Type': singleCenterType
+                        });
+                    }
+                );
+            }
         }
 
         if(query.zone) {
-            query.zone.forEach(
-                singleZone => {
-                    filterArray.push({
-                        'Zone': singleZone
-                    });
-                }
-            );
+            if(typeof query.zone === 'string') {
+                filterArray.push({
+                    'Zone': query.zone
+                });
+            } else if(Array.isArray(query.zone)) {
+                query.zone.forEach(
+                    singleZone => {
+                        filterArray.push({
+                            'Zone': singleZone
+                        });
+                    }
+                );
+            }
         }
 
         if(filterArray.length > 0) {
