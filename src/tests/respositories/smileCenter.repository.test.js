@@ -7,6 +7,45 @@ jest.mock('../../models/smileCenter.model', () => ({
     filterSmileCenter : jest.fn()
 }));
 
+const mockSimpleResult = [
+  {
+      "_id": "8FMFyWvZDh",
+      "Timetable": {
+        "saturday": [
+          "10:00-18:00"
+        ],
+        "weekdays": [
+          "10:00-18:00"
+        ]
+      },
+      "Appointment_Type_Id" : 5465487,
+      "Street": "Lafontaine",
+      "Center_Icon": "https://prod-moons-website.s3.amazonaws.com/icono_diente_estrella.svg",
+      "Center_Type": "Centro Moons",
+      "Apt": "Piso 4, consultorio 2-3",
+      "Number": "97",
+      "City": "Miguel Hidalgo",
+      "Zone": "Polanco",
+      "State": "Ciudad de México",
+      "Center_Name": "Polanco Full",
+      "Calendar_Id": 8713409,
+      "promo": "20% de Descuento",
+      "Country": "México",
+      "Center_Type": "Liverpool",
+      "Center_Desc": "Timbre a un costado de Wax Revolution. Piso 4",
+      "Services": {
+        "fullprimera": {
+          "productId": "fullprimera",
+          "AppointmentTypeId": "53474599"
+        },
+        "fullseguimiento": {
+          "productId": "fullseguimiento",
+          "AppointmentTypeId": "53222904"
+        }
+      }
+    }      
+];
+
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -116,50 +155,12 @@ test('should filter document inclusive', async () => {
 
 
   test('should filter document NOT inclusive', async () => {
-    const mockResult = [
-        {
-            "_id": "8FMFyWvZDh",
-            "Timetable": {
-              "saturday": [
-                "10:00-18:00"
-              ],
-              "weekdays": [
-                "10:00-18:00"
-              ]
-            },
-            "Appointment_Type_Id" : 5465487,
-            "Street": "Lafontaine",
-            "Center_Icon": "https://prod-moons-website.s3.amazonaws.com/icono_diente_estrella.svg",
-            "Center_Type": "Centro Moons",
-            "Apt": "Piso 4, consultorio 2-3",
-            "Number": "97",
-            "City": "Miguel Hidalgo",
-            "Zone": "Polanco",
-            "State": "Ciudad de México",
-            "Center_Name": "Polanco Full",
-            "Calendar_Id": 8713409,
-            "promo": "20% de Descuento",
-            "Country": "México",
-            "Center_Type": "Liverpool",
-            "Center_Desc": "Timbre a un costado de Wax Revolution. Piso 4",
-            "Services": {
-              "fullprimera": {
-                "productId": "fullprimera",
-                "AppointmentTypeId": "53474599"
-              },
-              "fullseguimiento": {
-                "productId": "fullseguimiento",
-                "AppointmentTypeId": "53222904"
-              }
-            }
-          }      
-    ];
 
     const mockQuery = { 
         zone: ['Polanco']
     };
 
-    SmileCenters.filterSmileCenter.mockResolvedValueOnce(mockResult);
+    SmileCenters.filterSmileCenter.mockResolvedValueOnce(mockSimpleResult);
   
     const resultado = await SmileCenterRepository.filterDocument(mockQuery);
   
@@ -192,4 +193,28 @@ test('should filter document inclusive', async () => {
             ]
         }
     ]); 
+  });
+
+
+  test('should filter document if query is a string', async () => {
+
+    const mockQuery = { 
+        zone: 'Polanco',
+        product_id: 'fullseguimiento',
+        center_type: 'Liverpool'
+    };
+
+    SmileCenters.filterSmileCenter.mockResolvedValueOnce(mockSimpleResult);
+  
+    await SmileCenterRepository.filterDocument(mockQuery);
+  
+    expect(SmileCenters.filterSmileCenter).toHaveBeenCalledWith(
+        {
+            '$and': [
+                { 'Services.fullseguimiento.productId': 'fullseguimiento' },
+                { Center_Type: 'Liverpool' },
+                { Zone: 'Polanco' }
+            ]
+        }
+    );
   });
