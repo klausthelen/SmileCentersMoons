@@ -1,3 +1,5 @@
 node_modules
+coverage
 .serverless
 .env*
+reference/policy.json
